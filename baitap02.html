@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài tập 02 — Form đăng ký & Validation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6fb; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+.navbar { background: linear-gradient(135deg, #1e3a8a, #4f46e5); padding: 0 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 50; }
+.nav-container { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.nav-brand { color: #fff; font-weight: 700; font-size: 18px; padding: 16px 0; text-decoration: none; }
+.nav-menu { display: flex; list-style: none; flex-wrap: wrap; }
+.nav-menu li a { display: block; color: #cbd5e1; text-decoration: none; padding: 18px 14px; font-size: 14px; transition: color 0.2s, background 0.2s; }
+.nav-menu li a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-menu li a.active { color: #fff; background: rgba(255,255,255,0.18); font-weight: 600; }
+.container { max-width: 1100px; margin: 30px auto; padding: 0 20px; flex: 1; width: 100%; }
+.page-card { background: #fff; border-radius: 14px; padding: 30px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 25px; }
+.page-card h1 { color: #1e3a8a; margin-bottom: 8px; font-size: 26px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 22px; }
+.footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 18px; font-size: 13px; margin-top: auto; }
+.form-wrap { max-width: 480px; margin: 0 auto; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: #444; }
+.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] {
+  width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.3s;
+}
+.form-group input:focus { border-color: #059669; }
+.form-group input.invalid { border-color: #dc2626; background: #fef2f2; }
+.form-group input.valid { border-color: #059669; }
+.error-text { color: #dc2626; font-size: 12.5px; margin-top: 5px; min-height: 16px; display: block; }
+.checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+.checkbox-group input { margin-top: 3px; cursor: pointer; }
+.checkbox-group label { font-weight: normal; margin: 0; }
+.checkbox-group a { color: #059669; text-decoration: none; }
+.strength-bar { height: 6px; background: #eee; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.strength-fill { height: 100%; width: 0%; background: #dc2626; transition: width 0.3s, background 0.3s; }
+.strength-label { font-size: 12px; color: #888; margin-top: 4px; }
+.btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(5,150,105,0.35); }
+.success-msg { display: none; background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 18px; border-left: 4px solid #10b981; font-size: 14px; }
+.success-msg.show { display: block; animation: fadeIn 0.5s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.user-list { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 13px; color: #666; }
+.user-list h3 { font-size: 14px; margin-bottom: 8px; color: #059669; }
+.user-list ul { padding-left: 20px; }
+.logic-section { margin-top: 30px; padding: 20px; background: #eef2ff; border-radius: 10px; border-left: 4px solid #4f46e5; }
+.logic-section h2 { color: #1e3a8a; margin-bottom: 12px; font-size: 18px; }
+.logic-section ul { padding-left: 20px; line-height: 1.8; font-size: 14px; color: #444; }
+.logic-section ul ul { margin: 6px 0; }
+.logic-section code { background: #e0e7ff; padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #3730a3; }
+@media (max-width: 700px) { .page-card { padding: 20px; } }
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">🚀 701-221A010397</a>
+      <ul class="nav-menu">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="baitap01.html">Bài tập 01</a></li>
+        <li><a href="baitap02.html">Bài tập 02</a></li>
+        <li><a href="baitap03.html">Bài tập 03</a></li>
+        <li><a href="about.html">Giới thiệu</a></li>
+        <li><a href="contact.html">Liên hệ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-card">
+      <h1>📝 Bài tập 02 — Đăng ký tài khoản</h1>
+      <p class="subtitle">Validate form & lưu dữ liệu vào LocalStorage</p>
+
+      <div class="form-wrap">
+        <div class="success-msg" id="successMsg">✅ Đăng ký thành công! Dữ liệu đã được lưu vào LocalStorage.</div>
+
+        <form id="registerForm" novalidate>
+          <div class="form-group">
+            <label for="name">Họ và tên *</label>
+            <input type="text" id="name" placeholder="Nguyễn Văn A">
+            <span class="error-text" id="nameErr"></span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" placeholder="example@mail.com">
+            <span class="error-text" id="emailErr"></span>
+          </div>
+          <div class="form-group">
+            <label for="password">Mật khẩu * (tối thiểu 8 ký tự: hoa, thường, số)</label>
+            <input type="password" id="password" placeholder="••••••••">
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-label" id="strengthLabel">Độ mạnh mật khẩu</div>
+            <span class="error-text" id="passErr"></span>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="agree">
+            <label for="agree">Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> *</label>
+          </div>
+          <span class="error-text" id="agreeErr"></span>
+          <button type="submit" class="btn-submit">Đăng ký</button>
+        </form>
+
+        <div class="user-list">
+          <h3>👥 Người dùng đã đăng ký (LocalStorage):</h3>
+          <ul id="userList"><li>Chưa có người dùng nào.</li></ul>
+        </div>
+      </div>
+
+      <div class="logic-section">
+        <h2>💡 Giải thích logic tư duy lập trình</h2>
+        <ul>
+          <li><b>Xử lý sự kiện submit:</b> Gắn <code>addEventListener('submit')</code>, gọi <code>e.preventDefault()</code> chặn reload. Thuộc tính <code>novalidate</code> tắt validation mặc định của trình duyệt để tự kiểm soát.</li>
+          <li><b>Validate:</b> Tên ≥ 2 ký tự; email regex <code>/^[^\s@]+@[^\s@]+\.[^\s@]+$/</code>; mật khẩu regex <code>/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}/</code>; checkbox phải được tick. Có thanh độ mạnh realtime.</li>
+          <li><b>Feedback:</b> Mỗi trường có ô lỗi riêng, class <code>invalid/valid</code> đổi màu viền; validate lại khi <code>blur/input</code>.</li>
+          <li><b>Bảo mật dữ liệu cục bộ:</b>
+            <ul>
+              <li>Không lưu mật khẩu plaintext — dùng <code>btoa()</code> (Base64) che mặt. Lưu ý: Base64 KHÔNG phải mã hóa an toàn. Thực tế phải dùng <code>SubtleCrypto</code> (SHA-256 + salt) hoặc gửi lên server, không bao giờ lưu mật khẩu thật ở client.</li>
+              <li><code>try/catch</code> quanh <code>localStorage.setItem</code> để bắt lỗi (quota đầy, chế độ riêng tư chặn storage).</li>
+              <li>Key có prefix <code>app_users_</code> tránh xung đột.</li>
+            </ul>
+          </li>
+          <li><b>Responsive:</b> Form <code>max-width: 480px</code>, input full-width, co giãn theo viewport.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">© 2026 — Bài tập thực hành Web | MSSV: 701-221A010397</footer>
+
+<script>
+(function () {
+  'use strict';
+  var path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-menu a').forEach(function (a) {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  var form = document.getElementById('registerForm');
+  var nameInp = document.getElementById('name');
+  var emailInp = document.getElementById('email');
+  var passInp = document.getElementById('password');
+  var agreeChk = document.getElementById('agree');
+  var successMsg = document.getElementById('successMsg');
+  var userList = document.getElementById('userList');
+  var strengthFill = document.getElementById('strengthFill');
+  var strengthLabel = document.getElementById('strengthLabel');
+
+  var STORAGE_KEY = 'app_users_v1';
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+  function setError(input, errEl, msg) { errEl.textContent = msg; input.classList.add('invalid'); input.classList.remove('valid'); }
+  function setValid(input, errEl) { errEl.textContent = ''; input.classList.remove('invalid'); input.classList.add('valid'); }
+  function validateName() {
+    var v = nameInp.value.trim(); var err = document.getElementById('nameErr');
+    if (!v) { setError(nameInp, err, 'Vui lòng nhập họ tên.'); return false; }
+    if (v.length < 2) { setError(nameInp, err, 'Họ tên tối thiểu 2 ký tự.'); return false; }
+    setValid(nameInp, err); return true;
+  }
+  function validateEmail() {
+    var v = emailInp.value.trim(); var err = document.getElementById('emailErr');
+    if (!v) { setError(emailInp, err, 'Vui lòng nhập email.'); return false; }
+    if (!emailRegex.test(v)) { setError(emailInp, err, 'Email không hợp lệ.'); return false; }
+    setValid(emailInp, err); return true;
+  }
+  function validatePass() {
+    var v = passInp.value; var err = document.getElementById('passErr');
+    if (!v) { setError(passInp, err, 'Vui lòng nhập mật khẩu.'); return false; }
+    if (!passRegex.test(v)) { setError(passInp, err, 'Mật khẩu phải ≥ 8 ký tự, có chữ hoa, thường và số.'); return false; }
+    setValid(passInp, err); return true;
+  }
+  function validateAgree() {
+    var err = document.getElementById('agreeErr');
+    if (!agreeChk.checked) { err.textContent = 'Bạn phải đồng ý điều khoản.'; return false; }
+    err.textContent = ''; return true;
+  }
+
+  passInp.addEventListener('input', function () {
+    var v = passInp.value; var score = 0;
+    if (v.length >= 8) score++;
+    if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+    if (/\d/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    strengthFill.style.width = (score * 25) + '%';
+    var colors = ['#dc2626', '#f59e0b', '#eab308', '#10b981'];
+    var labels = ['Rất yếu', 'Yếu', 'Trung bình', 'Mạnh'];
+    strengthFill.style.background = colors[Math.max(0, score - 1)] || '#dc2626';
+    strengthLabel.textContent = v ? 'Độ mạnh: ' + (labels[score - 1] || 'Rất yếu') : 'Độ mạnh mật khẩu';
+  });
+
+  nameInp.addEventListener('blur', validateName);
+  emailInp.addEventListener('blur', validateEmail);
+  passInp.addEventListener('blur', validatePass);
+  agreeChk.addEventListener('change', validateAgree);
+
+  function getUsers() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; } }
+  function saveUser(user) {
+    try {
+      var users = getUsers(); users.push(user);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); return true;
+    } catch (e) { alert('Lỗi lưu dữ liệu: ' + e.message); return false; }
+  }
+  function renderUserList() {
+    var users = getUsers();
+    if (!users.length) { userList.innerHTML = '<li>Chưa có người dùng nào.</li>'; return; }
+    userList.innerHTML = users.map(function (u) { return '<li>' + u.name + ' — ' + u.email + ' (lúc ' + u.createdAt + ')</li>'; }).join('');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    successMsg.classList.remove('show');
+    var ok = validateName() && validateEmail() && validatePass() && validateAgree();
+    if (!ok) return;
+    var user = {
+      name: nameInp.value.trim(), email: emailInp.value.trim(),
+      passwordHash: btoa(passInp.value), createdAt: new Date().toLocaleString('vi-VN')
+    };
+    if (saveUser(user)) {
+      successMsg.classList.add('show');
+      form.reset();
+      [nameInp, emailInp, passInp].forEach(function (i) { i.classList.remove('valid'); });
+      strengthFill.style.width = '0%'; strengthLabel.textContent = 'Độ mạnh mật khẩu';
+      renderUserList();
+      setTimeout(function () { successMsg.classList.remove('show'); }, 5000);
+    }
+  });
+
+  renderUserList();
+})();
+</script>
+</body>
+</html>

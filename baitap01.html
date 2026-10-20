@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài tập 01 — Danh sách sản phẩm & Tìm kiếm</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6fb; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+.navbar { background: linear-gradient(135deg, #1e3a8a, #4f46e5); padding: 0 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 50; }
+.nav-container { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.nav-brand { color: #fff; font-weight: 700; font-size: 18px; padding: 16px 0; text-decoration: none; }
+.nav-menu { display: flex; list-style: none; flex-wrap: wrap; }
+.nav-menu li a { display: block; color: #cbd5e1; text-decoration: none; padding: 18px 14px; font-size: 14px; transition: color 0.2s, background 0.2s; }
+.nav-menu li a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-menu li a.active { color: #fff; background: rgba(255,255,255,0.18); font-weight: 600; }
+.container { max-width: 1100px; margin: 30px auto; padding: 0 20px; flex: 1; width: 100%; }
+.page-card { background: #fff; border-radius: 14px; padding: 30px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 25px; }
+.page-card h1 { color: #1e3a8a; margin-bottom: 8px; font-size: 26px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 22px; }
+.footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 18px; font-size: 13px; margin-top: auto; }
+.search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.search-box input { flex: 1; min-width: 200px; padding: 12px 18px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 15px; outline: none; transition: border-color 0.3s; }
+.search-box input:focus { border-color: #4f46e5; }
+.search-box button { padding: 12px 26px; background: #4f46e5; color: #fff; border: none; border-radius: 30px; cursor: pointer; font-size: 15px; transition: background 0.3s; }
+.search-box button:hover { background: #4338ca; }
+.search-box .btn-reset { background: #94a3b8; }
+.stats { color: #666; font-size: 14px; margin-bottom: 15px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+.product-card { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 18px; text-align: center; transition: transform 0.25s, box-shadow 0.25s; cursor: pointer; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(79,70,229,0.2); }
+.product-icon { font-size: 42px; margin-bottom: 10px; }
+.product-name { font-weight: 600; margin-bottom: 6px; color: #333; }
+.product-price { color: #dc2626; font-weight: bold; font-size: 16px; }
+.product-category { font-size: 12px; color: #999; margin-top: 6px; }
+.error-msg { display: none; background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border-left: 4px solid #dc2626; }
+.error-msg.show { display: block; animation: shake 0.4s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.logic-section { margin-top: 30px; padding: 20px; background: #eef2ff; border-radius: 10px; border-left: 4px solid #4f46e5; }
+.logic-section h2 { color: #1e3a8a; margin-bottom: 12px; font-size: 18px; }
+.logic-section ul { padding-left: 20px; line-height: 1.8; font-size: 14px; color: #444; }
+.logic-section ul ul { margin: 6px 0; }
+.logic-section code { background: #e0e7ff; padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #3730a3; }
+@media (max-width: 700px) { .page-card { padding: 20px; } }
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">🚀 701-221A010397</a>
+      <ul class="nav-menu">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="baitap01.html">Bài tập 01</a></li>
+        <li><a href="baitap02.html">Bài tập 02</a></li>
+        <li><a href="baitap03.html">Bài tập 03</a></li>
+        <li><a href="about.html">Giới thiệu</a></li>
+        <li><a href="contact.html">Liên hệ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-card">
+      <h1>🛍️ Bài tập 01 — Danh sách sản phẩm</h1>
+      <p class="subtitle">Tìm kiếm theo tên sản phẩm (không phân biệt hoa thường)</p>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Nhập tên sản phẩm cần tìm..." autocomplete="off">
+        <button id="searchBtn">Tìm kiếm</button>
+        <button id="resetBtn" class="btn-reset">Đặt lại</button>
+      </div>
+
+      <div class="error-msg" id="errorMsg">⚠️ Không tìm thấy sản phẩm nào phù hợp!</div>
+      <div class="stats" id="stats"></div>
+      <div class="product-grid" id="productGrid"></div>
+
+      <div class="logic-section">
+        <h2>💡 Giải thích logic tư duy lập trình</h2>
+        <ul>
+          <li><b>Tránh lỗi injection (XSS):</b> Không dùng <code>innerHTML</code> với dữ liệu người dùng. Tên/giá sản phẩm render bằng <code>textContent</code> / <code>createElement</code> → ký tự <code>&lt;script&gt;</code> hiển thị dưới dạng text thuần, không thể thực thi.</li>
+          <li><b>Xử lý input:</b> <code>trim()</code> bỏ khoảng trắng thừa; chuyển cả từ khóa và tên sản phẩm về <code>toLowerCase()</code> để tìm kiếm không phân biệt hoa thường.</li>
+          <li><b>Tối ưu tìm kiếm:</b>
+            <ul>
+              <li>Chuẩn hóa sẵn trường <code>nameLower</code> trong mảng, tránh gọi <code>toLowerCase()</code> lặp lại mỗi lần lọc.</li>
+              <li><code>debounce</code> 300ms cho sự kiện <code>input</code> — chỉ lọc khi người dùng ngừng gõ, giảm số lần render DOM.</li>
+              <li>Render bằng <code>DocumentFragment</code> (1 lần reflow) thay vì append từng card.</li>
+            </ul>
+          </li>
+          <li><b>Xử lý lỗi:</b> Kết quả rỗng → hiển thị thông báo lỗi có animation shake và ẩn danh sách; ngược lại ẩn thông báo.</li>
+          <li><b>Responsive:</b> CSS Grid <code>auto-fill + minmax(200px, 1fr)</code> — số cột tự điều chỉnh theo màn hình.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">© 2026 — Bài tập thực hành Web | MSSV: 701-221A010397</footer>
+
+<script>
+(function () {
+  'use strict';
+  // Highlight nav active
+  var path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-menu a').forEach(function (a) {
+    if (a.getAttribute('href') === path) a.classList.add('active');
+  });
+
+  var grid = document.getElementById('productGrid');
+  var searchInput = document.getElementById('searchInput');
+  var searchBtn = document.getElementById('searchBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var errorMsg = document.getElementById('errorMsg');
+  var stats = document.getElementById('stats');
+
+  var products = [
+    { id: 1, name: 'Điện thoại iPhone 15',   price: 25990000, category: 'Điện thoại', icon: '📱' },
+    { id: 2, name: 'Laptop MacBook Air M2',  price: 28990000, category: 'Máy tính',   icon: '💻' },
+    { id: 3, name: 'Tai nghe AirPods Pro',    price: 6490000,  category: 'Phụ kiện',   icon: '🎧' },
+    { id: 4, name: 'Đồng hồ Apple Watch S9',  price: 11990000, category: 'Đồng hồ',    icon: '⌚' },
+    { id: 5, name: 'Máy ảnh Canon EOS R50',   price: 18500000, category: 'Máy ảnh',    icon: '📷' },
+    { id: 6, name: 'Bàn phím cơ Keychron K2', price: 2190000,  category: 'Phụ kiện',   icon: '⌨️' },
+    { id: 7, name: 'Loa JBL Charge 5',        price: 3490000,  category: 'Âm thanh',   icon: '🔊' }
+  ].map(function (p) { p.nameLower = p.name.toLowerCase(); return p; });
+
+  var fmt = function (n) { return n.toLocaleString('vi-VN') + ' ₫'; };
+
+  function renderProducts(list) {
+    grid.innerHTML = '';
+    var fragment = document.createDocumentFragment();
+    list.forEach(function (p) {
+      var card = document.createElement('div');
+      card.className = 'product-card';
+      var icon = document.createElement('div'); icon.className = 'product-icon'; icon.textContent = p.icon;
+      var name = document.createElement('div'); name.className = 'product-name'; name.textContent = p.name;
+      var price = document.createElement('div'); price.className = 'product-price'; price.textContent = fmt(p.price);
+      var cat = document.createElement('div'); cat.className = 'product-category'; cat.textContent = p.category;
+      card.append(icon, name, price, cat);
+      fragment.appendChild(card);
+    });
+    grid.appendChild(fragment);
+    stats.textContent = 'Hiển thị ' + list.length + ' / ' + products.length + ' sản phẩm';
+  }
+
+  function filterProducts(keyword) {
+    var kw = keyword.trim().toLowerCase();
+    if (!kw) return products;
+    return products.filter(function (p) { return p.nameLower.indexOf(kw) !== -1; });
+  }
+
+  function doSearch() {
+    var result = filterProducts(searchInput.value);
+    if (result.length === 0) {
+      errorMsg.classList.add('show'); grid.innerHTML = ''; stats.textContent = '0 kết quả';
+    } else {
+      errorMsg.classList.remove('show'); renderProducts(result);
+    }
+  }
+
+  var debounceTimer = null;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(doSearch, 300);
+  });
+  searchBtn.addEventListener('click', doSearch);
+  searchInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
+  resetBtn.addEventListener('click', function () {
+    searchInput.value = ''; errorMsg.classList.remove('show'); renderProducts(products);
+  });
+
+  renderProducts(products);
+})();
+</script>
+</body>
+</html>
